@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_nav_dashboard"
+        android:icon="@drawable/ic_project_details"
+        android:title="Dashboard" />
+
+    <item
+        android:id="@+id/bottom_nav_calendar"
+        android:icon="@drawable/ic_calendar"
+        android:title="TimeSheet" />
+
+    <item
+        android:id="@+id/bottom_nav_leave"
+        android:icon="@drawable/ic_leave"
+        android:title="Leave" />
+
+    <item
+        android:id="@+id/bottom_nav_allowance"
+        android:icon="@drawable/ic_allowences"
+        android:title="Claim" />
+</menu>

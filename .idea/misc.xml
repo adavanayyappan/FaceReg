@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.13703140830800406" />
+        <entry key="app/src/main/res/drawable-v24/custom_edit_text.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/custom_edit_text.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_add_white_24dp.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_allowances.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_allowences.xml" value="0.138" />
+        <entry key="app/src/main/res/drawable/ic_arrow.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_arrow_back.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/ic_background.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_calendar.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_complete.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_controls.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_edit_pencil.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_employee.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_laws.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_leave.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_menu_manage.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_power_button.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_project_details.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_project_status.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_search.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_sort_by_attributes.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_sort_by_attributes_interface_button_option.xml" value="0.1435" />
+        <entry key="app/src/main/res/drawable/ic_split.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_tasks.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_tick.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/ic_user.xml" value="0.201" />
+        <entry key="app/src/main/res/drawable/round_bg.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/rounded_edge.xml" value="0.138" />
+        <entry key="app/src/main/res/drawable/side_nav_bar.xml" value="0.1435" />
+        <entry key="app/src/main/res/layout/activity_add_employees.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/activity_add_face.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_approve_claim.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_approve_leave.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_create_allowance.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/activity_create_task.xml" value="0.6703812751217165" />
+        <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_forgot_password.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_identify_face.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.55" />
+        <entry key="app/src/main/res/layout/activity_login2.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/activity_new_project.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_new_project_select_worker.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_new_user.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_own_worker_profile.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_second.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_supervisor_dashboard.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/activity_task_details.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_third.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_worker_dashboard.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_worker_dashboard2.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_worker_profile.xml" value="0.536943164770154" />
+        <entry key="app/src/main/res/layout/alert_progress.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/app_bar_supervisor_dashboard.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/app_bar_worker_dashboard.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/approve_list_item.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/content_supervisor_dashboard.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/content_worker_dashboard.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_allowance_management.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_allowances.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/fragment_apply_allowance.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_apply_leave.xml" value="0.4994542911655121" />
+        <entry key="app/src/main/res/layout/fragment_bottom_sheet_sort.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/fragment_bottom_sheet_sort_leave.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/fragment_bottom_sheet_task.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/fragment_calendar.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_claim_supervisor.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_claim_worker.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_edit_profile.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/fragment_leave.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_leave_management.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_leave_worker.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/fragment_leaver_supervisor.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_mytasks.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_project_details.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_project_status.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_search.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/fragment_supervisor_dashboard.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/fragment_time_management.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_worker_dashboard.xml" value="0.42065009560229444" />
+        <entry key="app/src/main/res/layout/fragment_worker_details.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/fragment_worker_laws.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/layout_bottom_sheet.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/leave_management_dialog.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/nav_header_supervisor_dashboard.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/nav_header_worker_dashboard.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/nav_project_status.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/rv_task_model.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/worker_allowance_item.xml" value="0.6768802228412256" />
+        <entry key="app/src/main/res/layout/worker_leave_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/worker_leave_list_item.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/worker_list_item.xml" value="0.3998015873015873" />
+        <entry key="app/src/main/res/layout/worker_time_item.xml" value="0.625" />
+        <entry key="app/src/main/res/menu/activity_supervisor_dashboard_drawer.xml" value="0.5" />
+        <entry key="app/src/main/res/menu/activity_worker_dashboard_drawer.xml" value="0.2557291666666667" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.2546875" />
+        <entry key="app/src/main/res/menu/edit_menu.xml" value="0.2557291666666667" />
+        <entry key="app/src/main/res/menu/employee_select.xml" value="0.2557291666666667" />
+        <entry key="app/src/main/res/menu/supervisor_dashboard.xml" value="0.2557291666666667" />
+        <entry key="app/src/main/res/menu/worker_dashboard.xml" value="0.2557291666666667" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_dashboard">
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.bestlabs.facerecoginination.ui.Dashboard.SupervisorDashboardFragment"
+        tools:layout="@layout/fragment_supervisor_dashboard" />
+
+    <fragment
+        android:id="@+id/nav_timesheet"
+        android:name="com.bestlabs.facerecoginination.ui.TimeSheet.TimeSheetFragment"
+        tools:layout="@layout/fragment_time_management" />
+
+    <fragment
+        android:id="@+id/nav_leave"
+        android:name="com.bestlabs.facerecoginination.ui.leave_management.LeaveSupervisorManagementFragment"
+        tools:layout="@layout/fragment_leaver_supervisor" />
+
+    <fragment
+        android:id="@+id/nav_allowance"
+        android:name="com.bestlabs.facerecoginination.ui.claim.ClaimSupervisorManagementFragment"
+        tools:layout="@layout/fragment_claim_supervisor" />
+
+</navigation>

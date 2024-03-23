@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="#F1F1F1"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <!-- Main content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/parent_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="-30dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="30dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/imageView_top_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dashborad_bg"
+                            android:scaleType="centerCrop" />
+
+                        <TextView
+                            android:id="@+id/tv_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginTop="130dp"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/brownbold"
+                            android:singleLine="true"
+                            android:text="Welcome Back!"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="24sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_dash_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="200dp"
+                            android:layout_marginBottom="5dp"
+                            android:fontFamily="@font/brownbold"
+                            android:singleLine="true"
+                            android:text="Raganar Lathbrok"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toTopOf="@+id/tv_dash_designation" />
+
+                        <TextView
+                            android:id="@+id/tv_dash_designation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="200dp"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/lexenddeca"
+                            android:singleLine="true"
+                            android:text="Designer"
+                            android:textAlignment="textStart"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_attendance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="130dp"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/brownbold"
+                    android:singleLine="true"
+                    android:text="Attendance"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/textColor"
+                    android:textSize="24sp"
+                    />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_attendance_layout"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginEnd="50dp"
+                    android:layout_height="320dp"
+                    app:cardBackgroundColor="#F6F6f6"
+                    app:cardCornerRadius="30dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        >
+
+                        <TextView
+                            android:id="@+id/tv_dash_card_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/brownbold"
+                            android:singleLine="true"
+                            android:text="09:00 AM"
+                            android:textAlignment="center"
+                            android:textColor="#111F27"
+                            android:textSize="24sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_dash_card_date_year"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/brownbold"
+                            android:singleLine="true"
+                            android:text="Fri, Dec 23"
+                            android:textAlignment="center"
+                            android:textColor="#111F27"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_dash_card_time" />
+
+                        <ImageView
+                            android:id="@+id/iv_dash_card_scan"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_marginTop="25dp"
+                            android:background="@drawable/face_icon2"
+                            android:scaleType="centerCrop"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_dash_card_date_year"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_attendance_check_layout"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="120dp"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="#F6F6f6"
+                    app:cardCornerRadius="30dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:weightSum="100">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="30dp"
+                            android:gravity="center"
+                            android:layout_weight="33.3"
+                            android:orientation="vertical"
+                            android:weightSum="100">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:gravity="center"
+                                android:background="@drawable/ic_check_in"
+                                android:scaleType="centerCrop"
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_card_check_in"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_weight="60"
+                                android:fontFamily="@font/brownbold"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="08:00 Am"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="40"
+                                android:fontFamily="@font/lexenddeca"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="Check In"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="30dp"
+                            android:gravity="center"
+                            android:layout_weight="33.3"
+                            android:orientation="vertical"
+                            android:weightSum="100">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:gravity="center"
+                                android:background="@drawable/ic_check_out"
+                                android:scaleType="centerCrop"
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_card_check_out"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_weight="60"
+                                android:fontFamily="@font/brownbold"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="--:--"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="40"
+                                android:fontFamily="@font/lexenddeca"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="Check Out"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="30dp"
+                            android:gravity="center"
+                            android:layout_weight="33.3"
+                            android:orientation="vertical"
+                            android:weightSum="100">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:gravity="center"
+                                android:background="@drawable/ic_total_time"
+                                android:scaleType="centerCrop"
+                                />
+
+                            <TextView
+                                android:id="@+id/tv_card_check_total"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_weight="60"
+                                android:fontFamily="@font/brownbold"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="08:00 Pm"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="40"
+                                android:fontFamily="@font/lexenddeca"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:text="Working Hrs"
+                                android:textAlignment="center"
+                                android:textColor="#111F27"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Floating ImageView -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="150dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="30dp">
+
+                <ImageView
+                    android:id="@+id/floatingImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
