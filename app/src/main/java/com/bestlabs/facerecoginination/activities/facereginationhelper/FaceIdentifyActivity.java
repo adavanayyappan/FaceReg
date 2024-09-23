@@ -21,6 +21,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -36,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,10 +55,20 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.bestlabs.facerecoginination.NetworkManager.APIClient;
+import com.bestlabs.facerecoginination.NetworkManager.APIInterface;
 import com.bestlabs.facerecoginination.R;
+import com.bestlabs.facerecoginination.models.FaceAddResponse;
+import com.bestlabs.facerecoginination.models.PunchModel;
+import com.bestlabs.facerecoginination.others.AlertDialogHelper;
+import com.bestlabs.facerecoginination.others.Base64Utils;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.bestlabs.facerecoginination.others.SimilarityClassifier;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -91,13 +105,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class FaceIdentifyActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class FaceIdentifyActivity extends AppCompatActivity implements LocationListener {
     FaceDetector detector;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
     TextView preview_info;
-    Button recognize,camera_switch;
+    Button recognize,camera_switch, btnChangeFace;
     Interpreter tfLite;
     CameraSelector cameraSelector;
     boolean developerMode=false;
@@ -105,6 +123,14 @@ public class FaceIdentifyActivity extends AppCompatActivity {
     boolean start=true,flipX=false;
     Context context= FaceIdentifyActivity.this;
     int cam_face=CameraSelector.LENS_FACING_BACK; //Default Back Camera
+    private Boolean isSwipe = false;
+    private ConstraintLayout constraintLayout;
+    private static final int REQUEST_CODE_LOCATION = 1001;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private APIInterface apiService;
+    double latitude = 0;
+    double longitude = 0;
 
     int[] intValues;
     int inputSize=112;  //Input size for model
@@ -136,6 +162,8 @@ public class FaceIdentifyActivity extends AppCompatActivity {
 
         recognize = findViewById(R.id.btnPunchMe);
         camera_switch=findViewById(R.id.button5);
+        btnChangeFace = findViewById(R.id.btnChangeFace);
+        recognize.setVisibility(View.GONE);
 
         //Camera Permission
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -163,14 +191,19 @@ public class FaceIdentifyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (start == false) {
-                    Toast.makeText(FaceIdentifyActivity.this, "Punch me in", Toast.LENGTH_LONG).show();
-                    long timestamp = System.currentTimeMillis();
-
-                    // Convert the timestamp to a human-readable date
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.getDefault());
-                    String formattedDate = sdf.format(new Date(timestamp));
-                    start = true;
+                    postAddFaceDataRequest();
+                } else {
+                    Toast.makeText(FaceIdentifyActivity.this, "Face is not recognized", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        btnChangeFace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FaceIdentifyActivity.this, FaceAddActivity.class);
+                finish();
+                startActivity(intent);
             }
         });
 
@@ -183,11 +216,37 @@ public class FaceIdentifyActivity extends AppCompatActivity {
         FaceDetectorOptions highAccuracyOpts =
                 new FaceDetectorOptions.Builder()
                         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                         .build();
         detector = FaceDetection.getClient(highAccuracyOpts);
 
+        if (cam_face==CameraSelector.LENS_FACING_BACK) {
+            cam_face = CameraSelector.LENS_FACING_FRONT;
+            flipX=true;
+        }
         cameraBind();
+
+        apiService = APIClient.getClient().create(APIInterface.class);
+
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (checkLocationPermission()) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
     private void testHyperparameter()
     {
 
@@ -440,6 +499,13 @@ public class FaceIdentifyActivity extends AppCompatActivity {
                 Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
             }
         }
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private MappedByteBuffer loadModelFile(Activity activity, String MODEL_FILE) throws IOException {
@@ -652,10 +718,7 @@ public class FaceIdentifyActivity extends AppCompatActivity {
                     if(distance_local<distance) { //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
                         preview_info.setText("Face Detected\n Employee Name:\n" +name);
                         start = false;
-//                        intent = new Intent(SecondActivity.this, ThirdActivity.class);
-//                        intent.putExtra("eName", name);
-//                        finish();
-//                        startActivity(intent);
+                        postAddFaceDataRequest();
                     } else {
                         preview_info.setText("Unknown User \n Contact Admin Team");
                     }
@@ -991,6 +1054,102 @@ public class FaceIdentifyActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Method to make the POST request
+    public void postAddFaceDataRequest() {
+        startLocationUpdates();
+        String token = PreferenceManager.getString(context, Constants.KEY_TOKEN, "");
+        int empID = PreferenceManager.getInt(context, Constants.KEY_EMP_ID, 0);
+        int clientID = PreferenceManager.getInt(context, Constants.KEY_CLIENT_ID, 0);
+        String empID_STR = Base64Utils.intToBase64(empID);
+        String clientID_STR = Base64Utils.intToBase64(clientID);
+        String latitude_STR = String.valueOf(latitude);
+        String longitude_STR = String.valueOf(longitude);
+        Log.e("token", ""+token);
+        Log.e("latitude", ""+latitude);
+        Log.e("longitude", ""+longitude);
+
+        Call<PunchModel> call = apiService.postPunching(token, empID_STR, clientID_STR, latitude_STR, longitude_STR);
+
+        call.enqueue(new Callback<PunchModel>() {
+            @Override
+            public void onResponse(Call<PunchModel> call, Response<PunchModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Handle successful response
+                    PunchModel punchModel = response.body();
+                    Log.e("Response", ""+response.body());
+                    Log.e("Status", punchModel.getStatus());
+                    Log.e("StartTime", punchModel.getStartTime());
+                    Log.e("EndTime", punchModel.getEndTime());
+                    start = true;
+                    Toast.makeText(context, "Punch me success", Toast.LENGTH_SHORT).show();
+                    finish();
+
+                } else {
+                    // Handle unsuccessful response
+                    // Example of using the AlertDialogHelper to show an alert dialog
+                    Toast.makeText(context, "Punch in failed. Please Try Again", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PunchModel> call, Throwable t) {
+                // Handle failure
+                Toast.makeText(context, "Punch in failed. Please Try Again", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_CODE_LOCATION);
+            return false;
+        }
+        return true;
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 0, 0, this);
+    }
+
+    private void stopLocationUpdates() {
+        if (locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
     }
 
 }

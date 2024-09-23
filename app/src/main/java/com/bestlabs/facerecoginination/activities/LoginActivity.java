@@ -1,11 +1,18 @@
 package com.bestlabs.facerecoginination.activities;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,12 +27,31 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bestlabs.facerecoginination.NetworkManager.APIClient;
+import com.bestlabs.facerecoginination.NetworkManager.APIInterface;
 import com.bestlabs.facerecoginination.R;
+import com.bestlabs.facerecoginination.models.LoginUserModel;
+import com.bestlabs.facerecoginination.others.AlertDialogHelper;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.NetworkUtils;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.bestlabs.facerecoginination.others.SharedPref;
+import com.bestlabs.facerecoginination.others.SimilarityClassifier;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
     EditText mEmail,mPassword;
@@ -35,6 +61,8 @@ public class LoginActivity extends AppCompatActivity {
     Context context;
     private Boolean isSwipe = false;
     private ConstraintLayout constraintLayout;
+
+    private APIInterface apiService;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +70,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        apiService = APIClient.getClient().create(APIInterface.class);
+
         initialize();
         clickListners();
     }
@@ -61,37 +92,53 @@ public class LoginActivity extends AppCompatActivity {
         dialog = alertDialog.create();
         dialog.setCancelable(false);
         dialog.setView(progressBar);
+
+//        mEmail.setText("98765432");
+//        mPassword.setText("Password@123");
     }
 
     private void clickListners(){
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), WorkerDashboardActivity.class);
-                finish();
-                startActivity(intent);
                 String email = mEmail.getText().toString();
-//                String password = mPassword.getText().toString();
-//                if (!isValidEmail(email)) {
-//                    mEmail.setError("Invalid Email");
-//                }
-//
-//                if (!isValidPassword(password)) {
-//                    mPassword.setError("Invalid Password");
-//                }
-//                if (email.isEmpty() || password.isEmpty())
-//                    Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
-//                else {
-//                    Intent intent = new Intent(getBaseContext(), WorkerDashboardActivity.class);
-//                    finish();
-//                    startActivity(intent);
-//                }
+                String password = mPassword.getText().toString();
+
+                if (email.isEmpty()) {
+                    mEmail.setError("Please enter email/ mobile number");
+                }
+
+                if (password.isEmpty()) {
+                    mPassword.setError("Please enter password");
+                }
+
+                if (!isValidPassword(password)) {
+                    mPassword.setError("Invalid Password");
+                }
+                if (email.isEmpty() || password.isEmpty())
+                    Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                else {
+                    // Check if the internet is available
+                    if (NetworkUtils.isNetworkAvailable(LoginActivity.this)) {
+                        // Your network-related logic here
+                        postLoginDataRequest(email, password);
+                    } else {
+                        // Display Snackbar with retry option
+                        NetworkUtils.showNoInternetSnackbar(constraintLayout, new NetworkUtils.OnRetryListener() {
+                            @Override
+                            public void onRetry() {
+                                // Handle retry action
+                                // You may want to reattempt the network operation
+                            }
+                        });
+                    }
+                }
             }
         });
         txtFrgtPwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), SupervisorDashboard.class);
+                Intent intent = new Intent(getBaseContext(), ForgotPasswordActivity.class);
                 finish();
                 startActivity(intent);
             }
@@ -102,6 +149,58 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
+            }
+        });
+    }
+
+    // Method to make the POST request
+    public void postLoginDataRequest(String userName, String password) {
+        dialog.show();
+        Call<LoginUserModel> call = apiService.postLogin(userName, password);
+
+        call.enqueue(new Callback<LoginUserModel>() {
+            @Override
+            public void onResponse(Call<LoginUserModel> call, Response<LoginUserModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Handle successful response
+                    Log.e("response", ""+response.body());
+                    dialog.dismiss();
+                    LoginUserModel result = response.body();
+                    if (result.getStatus().equals("ok")) {
+                        PreferenceManager.saveString(context, Constants.KEY_TOKEN, result.getResult().getToken());
+                        PreferenceManager.saveInt(context, Constants.KEY_EMP_ID, result.getResult().getEmployeeID());
+                        PreferenceManager.saveInt(context, Constants.KEY_CLIENT_ID, result.getResult().getEmployeeClientID());
+                        PreferenceManager.saveString(context, Constants.KEY_NAME, result.getResult().getEmployeeName());
+                        PreferenceManager.saveBoolean(context, Constants.KEY_ISLOGGEDIN, true);
+                        PreferenceManager.saveString(context, Constants.KEY_EMP_IMAGE, result.getResult().getFaceImage());
+
+                        if (result.getResult().getAllowApprove().equals("No")) {
+                            Intent intent = new Intent(getBaseContext(), WorkerDashboardActivity.class);
+                            finish();
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(getBaseContext(), SupervisorDashboard.class);
+                            finish();
+                            startActivity(intent);
+                        }
+                    } else {
+                        AlertDialogHelper.showSnackbar(constraintLayout,"Login Failed. Please Try Again" );
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    // Example of using the AlertDialogHelper to show an alert dialog
+                    Log.e("response", ""+response.errorBody());
+                    dialog.dismiss();
+                    AlertDialogHelper.showSnackbar(constraintLayout,"Login Failed. Please Try Again" );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginUserModel> call, Throwable t) {
+                // Handle failure
+                Log.e("response", ""+t.getLocalizedMessage());
+                dialog.dismiss();
+                AlertDialogHelper.showSnackbar(constraintLayout,"Login Failed. Please Try Again" );
             }
         });
     }
@@ -124,4 +223,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         return false;
     }
+
 }
+

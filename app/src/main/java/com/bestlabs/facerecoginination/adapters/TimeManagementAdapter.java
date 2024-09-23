@@ -10,8 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bestlabs.facerecoginination.R;
-import com.bestlabs.facerecoginination.models.LeaveModel;
-import com.bestlabs.facerecoginination.models.TimeSheetModel;
+import com.bestlabs.facerecoginination.models.PunchListModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,16 +20,16 @@ import java.util.Locale;
 
 public class TimeManagementAdapter extends RecyclerView.Adapter<TimeManagementAdapter.ViewHolder>{
 
-    private ArrayList<TimeSheetModel> timeSheetModels = new ArrayList<>();
+    private PunchListModel punchListModel;
     private Context mContext;
 
-    public ArrayList<TimeSheetModel> getTimeSheetModels() {
-        return timeSheetModels;
+    public ArrayList<PunchListModel.PunchListItem> getTimeSheetModels() {
+        return (ArrayList<PunchListModel.PunchListItem>) punchListModel.getResult();
     }
 
-    public TimeManagementAdapter(Context mContext, ArrayList<TimeSheetModel> timeSheetModels) {
+    public TimeManagementAdapter(Context mContext, PunchListModel punchListModel) {
         this.mContext = mContext;
-        this.timeSheetModels = timeSheetModels;
+        this.punchListModel = punchListModel;
     }
 
     @NonNull
@@ -42,10 +41,10 @@ public class TimeManagementAdapter extends RecyclerView.Adapter<TimeManagementAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        TimeSheetModel timeSheetModel = timeSheetModels.get(position);
+        PunchListModel.PunchListItem timeSheetModel = getTimeSheetModels().get(position);
 
         try {
-            Date date = stringToDate(timeSheetModel.getDate());
+            Date date = stringToDate(timeSheetModel.getDateFormat());
 
             String formattedYear = formatYearDate(date);
             String formattedDate = formatDate(date);
@@ -62,7 +61,7 @@ public class TimeManagementAdapter extends RecyclerView.Adapter<TimeManagementAd
 
     private static Date stringToDate(String dateString) throws ParseException {
         // Define the date format
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
         // Parse the date string into a Date object
         return dateFormat.parse(dateString);
@@ -86,16 +85,16 @@ public class TimeManagementAdapter extends RecyclerView.Adapter<TimeManagementAd
 
     @Override
     public int getItemCount() {
-        return timeSheetModels.size();
+        return getTimeSheetModels().size();
     }
 
     public void removeItem(int position) {
-        timeSheetModels.remove(position);
+        getTimeSheetModels().remove(position);
         notifyDataSetChanged();
     }
 
-    public void restoreItem(TimeSheetModel item, int position) {
-        timeSheetModels.add(position,item);
+    public void restoreItem(PunchListModel.PunchListItem item, int position) {
+        getTimeSheetModels().add(position,item);
         notifyDataSetChanged();
     }
 

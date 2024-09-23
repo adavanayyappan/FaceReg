@@ -55,6 +55,10 @@ public class ForgotPasswordActivity  extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String email = mEmail.getText().toString();
+                if (email.isEmpty()) {
+                    mEmail.setError("Please enter email/ mobile number");
+                }
+
                 if (!isValidEmail(email)) {
                     mEmail.setError("Invalid Email");
                 }

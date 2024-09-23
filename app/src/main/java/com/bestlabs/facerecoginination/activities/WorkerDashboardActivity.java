@@ -3,6 +3,7 @@ package com.bestlabs.facerecoginination.activities;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,9 +13,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -24,9 +28,13 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bestlabs.facerecoginination.R;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.NetworkUtils;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.bestlabs.facerecoginination.others.SharedPref;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
 public class WorkerDashboardActivity extends AppCompatActivity {
 
@@ -39,6 +47,8 @@ public class WorkerDashboardActivity extends AppCompatActivity {
     private SharedPref sharedPref;
     private TextView nav_name, nav_email;
     BottomNavigationView bottomNavigationView;
+    private ConstraintLayout constraintLayout;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,27 +56,30 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_worker_dashboard);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         int titleTextColor = Color.WHITE; // Change it to the color you desire
         toolbar.setTitleTextColor(titleTextColor);
+        setTitle("Dashboard");
+        setSupportActionBar(toolbar);
 
         taskSortBundle = new Bundle();
         sharedPref = new SharedPref(WorkerDashboardActivity.this);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle  = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        toggle.setDrawerIndicatorEnabled(true);
+        drawer.setDrawerListener(toggle);
+
         navigationView = findViewById(R.id.nav_view);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setAnimation(null);
+        constraintLayout = findViewById(R.id.container);
 
+        String image_prefix = PreferenceManager.getString(this, Constants.KEY_EMP_IMAGE, "");
+        String emp_name = PreferenceManager.getString(this, Constants.KEY_NAME, "");
         //setting nav header items
         View header = navigationView.getHeaderView(0);
         nav_name = header.findViewById(R.id.nav_name);
         nav_email = header.findViewById(R.id.nav_email);
-        nav_name.setText(sharedPref.getNAME());
         nav_email.setText(sharedPref.getEMAIL());
         header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,13 +89,15 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             }
         });
         mProfileImage = header.findViewById(R.id.profile_image);
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(mProfileImage);
+        nav_name.setText(emp_name);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_profile, R.id.nav_terms,
                 R.id.nav_privacy, R.id.nav_contact_us)
-                .setDrawerLayout(drawer)
+                .setOpenableLayout(drawer)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -95,7 +110,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         navigationView.setItemIconTintList(null);
         //setting icon tint to white for other menu items
         setDefaultIconTint();
-        setTitle("Dashboard");
         // Set up a ColorStateList for icon colors
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_checked},
@@ -137,6 +151,35 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkNetwork();
+        String image_prefix = PreferenceManager.getString(this, Constants.KEY_EMP_IMAGE, "");
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(mProfileImage);
+    }
+
+    private void checkNetwork() {
+
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            // Display Snackbar with retry option
+            NetworkUtils.showNoInternetSnackbar(constraintLayout, new NetworkUtils.OnRetryListener() {
+                @Override
+                public void onRetry() {
+                    // Handle retry action
+                    checkNetwork();
+                }
+            });
+        }
+
+    }
+
 
     private void setDefaultIconTint() {
         linearLayout = findViewById(R.id.ll_logout);
@@ -146,6 +189,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 SharedPref sharedPref = new SharedPref(getBaseContext());
                 sharedPref.logout();
                 ExitActivity.exitApplicationAndRemoveFromRecent(WorkerDashboardActivity.this);
+                PreferenceManager.clearPreferences(WorkerDashboardActivity.this);
             }
         });
     }
@@ -167,5 +211,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

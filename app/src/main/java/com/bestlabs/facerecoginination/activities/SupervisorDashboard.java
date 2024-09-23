@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -23,9 +24,13 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bestlabs.facerecoginination.R;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.NetworkUtils;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.bestlabs.facerecoginination.others.SharedPref;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
 public class SupervisorDashboard extends AppCompatActivity {
 
@@ -38,6 +43,7 @@ public class SupervisorDashboard extends AppCompatActivity {
     private SharedPref sharedPref;
     private TextView nav_name, nav_email;
     BottomNavigationView bottomNavigationView;
+    private ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +61,14 @@ public class SupervisorDashboard extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setAnimation(null);
+        constraintLayout = findViewById(R.id.container);
+        String image_prefix = PreferenceManager.getString(this, Constants.KEY_EMP_IMAGE, "");
+        String emp_name = PreferenceManager.getString(this, Constants.KEY_NAME, "");
 
         //setting nav header items
         View header = navigationView.getHeaderView(0);
         nav_name = header.findViewById(R.id.nav_name);
         nav_email = header.findViewById(R.id.nav_email);
-        nav_name.setText(sharedPref.getNAME());
         nav_email.setText(sharedPref.getEMAIL());
         header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +78,9 @@ public class SupervisorDashboard extends AppCompatActivity {
             }
         });
         mProfileImage = header.findViewById(R.id.profile_image);
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(mProfileImage);
+        nav_name.setText(emp_name);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -126,6 +137,28 @@ public class SupervisorDashboard extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkNetwork();
+        String image_prefix = PreferenceManager.getString(this, Constants.KEY_EMP_IMAGE, "");
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(mProfileImage);
+    }
+
+    private void checkNetwork() {
+
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            // Display Snackbar with retry option
+            NetworkUtils.showNoInternetSnackbar(constraintLayout, new NetworkUtils.OnRetryListener() {
+                @Override
+                public void onRetry() {
+                    // Handle retry action
+                    checkNetwork();
+                }
+            });
+        }
+
+    }
 
     private void setDefaultIconTint() {
         linearLayout = findViewById(R.id.ll_logout);
@@ -135,6 +168,7 @@ public class SupervisorDashboard extends AppCompatActivity {
                 SharedPref sharedPref = new SharedPref(getBaseContext());
                 sharedPref.logout();
                 ExitActivity.exitApplicationAndRemoveFromRecent(SupervisorDashboard.this);
+                PreferenceManager.clearPreferences(SupervisorDashboard.this);
             }
         });
     }
@@ -158,5 +192,11 @@ public class SupervisorDashboard extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

@@ -20,8 +20,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bestlabs.facerecoginination.R;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.squareup.picasso.Picasso;
 
 public class WorkerProfileManagement extends Fragment {
 
@@ -57,6 +60,12 @@ public class WorkerProfileManagement extends Fragment {
         textEditTextMobile = root.findViewById(R.id.editTextMobile);
         textEditTextGender = root.findViewById(R.id.editTextGender);
         textEditTextDOB = root.findViewById(R.id.editTextDOB);
+
+        String image_prefix = PreferenceManager.getString(getActivity(), Constants.KEY_EMP_IMAGE, "");
+        String emp_name = PreferenceManager.getString(getActivity(), Constants.KEY_NAME, "");
+
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(editImage);
+        tvEmpName.setText(emp_name);
 
         save_Btn.setOnClickListener(new View.OnClickListener() {
             @Override

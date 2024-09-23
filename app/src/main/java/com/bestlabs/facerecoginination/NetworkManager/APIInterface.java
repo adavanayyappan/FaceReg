@@ -1,8 +1,14 @@
 package com.bestlabs.facerecoginination.NetworkManager;
 
 import com.bestlabs.facerecoginination.models.ClaimModel;
+import com.bestlabs.facerecoginination.models.FaceAddResponse;
+import com.bestlabs.facerecoginination.models.LeaveCategoryModel;
+import com.bestlabs.facerecoginination.models.LeaveListModel;
 import com.bestlabs.facerecoginination.models.LeaveModel;
-import com.bestlabs.facerecoginination.models.TimeSheetModel;
+import com.bestlabs.facerecoginination.models.LoginUserModel;
+import com.bestlabs.facerecoginination.models.PunchListModel;
+import com.bestlabs.facerecoginination.models.PunchModel;
+import com.bestlabs.facerecoginination.models.PunchStatusModel;
 import com.bestlabs.facerecoginination.models.UserModel;
 import com.bestlabs.facerecoginination.models.UserProfile;
 
@@ -15,6 +21,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -22,22 +29,82 @@ import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface APIInterface {
+
+    @FormUrlEncoded
+    @POST("users/login")
+    Call<LoginUserModel> postLogin(
+            @Field("userName") String userName,
+            @Field("password") String password
+    );
+
+    @FormUrlEncoded
+    @POST("attendance/punching")
+    Call<PunchModel> postPunching(
+            @Header("Authorization") String authToken,
+            @Field("empID") String empID,
+            @Field("clientID") String clientID,
+            @Field("latitude") String latitude,
+            @Field("longitude") String longitude
+    );
+
+    @GET("attendance/punchingstatus")
+    Call<PunchStatusModel> getPunchStatus(
+            @Header("Authorization") String authToken,
+            @Query("empID") String empID,
+            @Query("clientID") String clientID
+    );
+
+    @GET("attendance/punchinglist")
+    Call<PunchListModel> getPunchList(
+            @Header("Authorization") String authToken,
+            @Query("empID") String empID,
+            @Query("clientID") String clientID,
+            @Query("month") String month
+    );
+
+    @GET("leaveType/dropdownlist")
+    Call<LeaveCategoryModel> getLeaveCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("empID") String empID,
+            @Query("clientID") String clientID
+    );
+
+    @Multipart
+    @POST("attendance/addFace")
+    Call<FaceAddResponse> uploadAddFace(
+            @Header("Authorization") String authToken,
+            @Part MultipartBody.Part file,
+            @Part("empID") RequestBody empID,
+            @Part("clientID") RequestBody clientID
+    );
+
+    @GET("Leave/leavelist")
+    Call<LeaveListModel> getLeaveList(
+            @Header("Authorization") String authToken,
+            @Query("empID") String empID,
+            @Query("clientID") String clientID
+    );
+
+    @Multipart
+    @POST("Leave/apply")
+    Call<FaceAddResponse> applyLeave(
+            @Header("Authorization") String authToken,
+            @Part MultipartBody.Part file,
+            @Part("empID") RequestBody empID,
+            @Part("clientID") RequestBody clientID,
+            @Part("leaveTypeID") RequestBody leaveTypeID,
+            @Part("fromDate") RequestBody fromDate,
+            @Part("toDate") RequestBody toDate,
+            @Part("remarks") RequestBody remarks,
+            @Part("coWorkerEmailID") RequestBody coWorkerEmailID
+    );
+
     @GET("claims")
     Call<List<ClaimModel>> getClaims();
 
     @GET("leaveData") // Replace with your actual endpoint
     Call<List<LeaveModel>> getLeaveData();
 
-    @GET("leaveData") // Replace with your actual endpoint
-    Call<List<TimeSheetModel>> getTimeSheetData();
-
     @PUT("updateProfile")
     Call<UserModel> updateProfile(@Body UserProfile userProfile);
-
-    @Multipart
-    @POST("uploadImage")
-    Call<String> uploadImage(
-            @Part MultipartBody.Part image,
-            @Part("description") RequestBody description
-    );
 }

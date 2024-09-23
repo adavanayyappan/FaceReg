@@ -31,8 +31,11 @@ import com.bestlabs.facerecoginination.adapters.ClaimManagementRVAdapter;
 import com.bestlabs.facerecoginination.models.ClaimModel;
 import com.bestlabs.facerecoginination.models.UserModel;
 import com.bestlabs.facerecoginination.models.UserProfile;
+import com.bestlabs.facerecoginination.others.Constants;
+import com.bestlabs.facerecoginination.others.PreferenceManager;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -76,6 +79,12 @@ public class EditProfileActivity  extends AppCompatActivity {
         textEditTextMobile = findViewById(R.id.editTextMobile);
         textEditTextGender = findViewById(R.id.editTextGender);
         textEditTextDOB = findViewById(R.id.editTextDOB);
+
+        String image_prefix = PreferenceManager.getString(this, Constants.KEY_EMP_IMAGE, "");
+        String emp_name = PreferenceManager.getString(this, Constants.KEY_NAME, "");
+
+        Picasso.get().load(Constants.KEY_IMAGE_URL+image_prefix).into(editImage);
+        tvEmpName.setText(emp_name);
 
         save_Btn.setOnClickListener(new View.OnClickListener() {
             @Override

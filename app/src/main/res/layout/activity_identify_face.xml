@@ -32,9 +32,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
         android:fillViewport="true"
-        android:layout_marginTop="60dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBar">
@@ -45,9 +44,8 @@
 
             <FrameLayout
                 android:id="@+id/container"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -57,14 +55,12 @@
                     android:id="@+id/button5"
                     android:layout_width="68dp"
                     android:layout_height="65dp"
-                    android:layout_marginStart="229dp"
-                    android:layout_marginEnd="229dp"
-                    android:layout_marginRight="229dp"
+                    android:layout_margin="35dp"
                     android:background="@drawable/cam"
                     android:backgroundTint="@color/teal_200"
                     android:elevation="1dp"
+                    android:layout_gravity="right|top"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     tools:layout_conversion_absoluteHeight="63dp"
                     tools:layout_conversion_absoluteWidth="62dp" />
 
@@ -82,11 +78,11 @@
                 android:fontFamily="@font/brownbold"
                 android:text = "Face Detected"
                 android:gravity="center"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/btnPunchMe"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/container" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <Button
                 android:id="@+id/btnPunchMe"
@@ -96,6 +92,19 @@
                 android:background="@color/buttonBackgroundColor"
                 android:fontFamily="@font/brownbold"
                 android:text="PUNCH ME IN"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/btnChangeFace"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/btnChangeFace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@color/buttonBackgroundColor"
+                android:fontFamily="@font/brownbold"
+                android:text="Change Face"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
