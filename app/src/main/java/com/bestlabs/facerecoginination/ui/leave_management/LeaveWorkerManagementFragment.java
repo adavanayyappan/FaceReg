@@ -27,6 +27,7 @@ import com.bestlabs.facerecoginination.models.ClaimModel;
 import com.bestlabs.facerecoginination.models.LeaveCategoryModel;
 import com.bestlabs.facerecoginination.models.LeaveListModel;
 import com.bestlabs.facerecoginination.models.LeaveModel;
+import com.bestlabs.facerecoginination.models.LeaveRequestListResponse;
 import com.bestlabs.facerecoginination.others.AlertDialogHelper;
 import com.bestlabs.facerecoginination.others.Base64Utils;
 import com.bestlabs.facerecoginination.others.Constants;
@@ -52,13 +53,13 @@ public class LeaveWorkerManagementFragment extends Fragment {
     ArrayList<LeaveModel> leaveModels;
     private AlertDialog dialog;
     APIInterface apiService;
+    private boolean isLoading = false;
+    private int currentPage = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_leave_worker, container, false);
 
-        leaveModels = new ArrayList<>();
-        initData();
 
         ProgressBar progressBar = new ProgressBar(getActivity());
         progressBar.setPadding(10,30,10,30);
@@ -70,12 +71,8 @@ public class LeaveWorkerManagementFragment extends Fragment {
         apiService = APIClient.getClient().create(APIInterface.class);
 
         applyLeave_Btn = root.findViewById(R.id.fab_apply_leave);
-
+        constraintLayout = root.findViewById(R.id.constraint_layout);
         recyclerView = root.findViewById(R.id.rc_worker_details);
-        leaveManagementRVAdapter = new LeaveManagementRVAdapter(leaveModels,getActivity());
-        recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.setAdapter(leaveManagementRVAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         recyclerViewLeave = root.findViewById(R.id.rc_worker_leave_list);
 
@@ -87,41 +84,64 @@ public class LeaveWorkerManagementFragment extends Fragment {
             }
         });
         getLeaveListTypeData();
+        getRequestLeaveListTypeData();
         return root;
     }
 
-    private void getLeaveData() {
-        // Create an instance of the Retrofit service
-        APIInterface leaveService = APIClient.getClient().create(APIInterface.class);
+    private void getRequestLeaveListTypeData() {
+        // Check if the internet is available
+        if (NetworkUtils.isNetworkAvailable(getActivity())) {
+            // Your network-related logic here
+            dialog.show();
+            String token = PreferenceManager.getString(getActivity(), Constants.KEY_TOKEN, "");
+            int empID = PreferenceManager.getInt(getActivity(), Constants.KEY_EMP_ID, 0);
+            int clientID = PreferenceManager.getInt(getActivity(), Constants.KEY_CLIENT_ID, 0);
+            String empID_STR = Base64Utils.intToBase64(empID);
+            String clientID_STR = Base64Utils.intToBase64(clientID);
+            Log.e("token", ""+token);
+            Log.e("empID_STR", ""+empID_STR);
+            Log.e("clientID_STR", ""+clientID_STR);
+            // Call the getPunchList method with authorization header and query parameters
+            Call<LeaveRequestListResponse> call = apiService.getRequestLeaveList(token, empID_STR, clientID_STR);
 
-        // Make the API call
-        Call<List<LeaveModel>> call = leaveService.getLeaveData();
-        call.enqueue(new Callback<List<LeaveModel>>() {
-            @Override
-            public void onResponse(Call<List<LeaveModel>> call, Response<List<LeaveModel>> response) {
-                if (response.isSuccessful()) {
-                    List<LeaveModel> leaves = response.body();
+            call.enqueue(new Callback<LeaveRequestListResponse>() {
+                @Override
+                public void onResponse(Call<LeaveRequestListResponse> call, Response<LeaveRequestListResponse> response) {
+                    if (response.isSuccessful()) {
+                        dialog.dismiss();
+                        LeaveRequestListResponse leaveListModels = response.body();
+                        if (leaveListModels.getResult() == null) {
+                            return;
+                        }
+                        leaveManagementRVAdapter = new LeaveManagementRVAdapter((ArrayList<LeaveRequestListResponse.Leave>) leaveListModels.getResult(),getActivity());
+                        recyclerView.setNestedScrollingEnabled(false);
+                        recyclerView.setAdapter(leaveManagementRVAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                    // Update your UI with the claims data
-                    // For example, you can use RecyclerView to display a list of claims
-                } else {
-                    // Handle unsuccessful response
+                    } else {
+                        // Handle error response
+                        dialog.dismiss();
+                        AlertDialogHelper.showSnackbar(constraintLayout,"Oops Failed. Please Try Again" );
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<LeaveModel>> call, Throwable t) {
-                // Handle failure
-            }
-        });
-    }
-
-    private void initData() {
-        LeaveModel leaveModel = new LeaveModel("Raganar","I'm sick","emp123","10/11/2019", "Approved");
-        leaveModels.add(leaveModel);
-
-        leaveModel = new LeaveModel("Suresh","I'm sick","emp123","10/11/2019", "Pending");
-        leaveModels.add(leaveModel);
+                @Override
+                public void onFailure(Call<LeaveRequestListResponse> call, Throwable t) {
+                    // Handle failure
+                    dialog.dismiss();
+                    AlertDialogHelper.showSnackbar(constraintLayout,"Oops Failed. Please Try Again" );
+                }
+            });
+        } else {
+            // Display Snackbar with retry option
+            NetworkUtils.showNoInternetSnackbar(constraintLayout, new NetworkUtils.OnRetryListener() {
+                @Override
+                public void onRetry() {
+                    // Handle retry action
+                    getRequestLeaveListTypeData();
+                }
+            });
+        }
     }
 
     private void getLeaveListTypeData() {
@@ -146,7 +166,9 @@ public class LeaveWorkerManagementFragment extends Fragment {
                     if (response.isSuccessful()) {
                         dialog.dismiss();
                         LeaveListModel leaveListModels = response.body();
-
+                        if (leaveListModels.getResult() == null) {
+                            return;
+                        }
 
                         leaveTypeListRVAdapter = new LeaveTypeListRVAdapter((ArrayList<LeaveListModel.LeaveType>) leaveListModels.getResult(), getActivity());
                         recyclerViewLeave.setNestedScrollingEnabled(false);

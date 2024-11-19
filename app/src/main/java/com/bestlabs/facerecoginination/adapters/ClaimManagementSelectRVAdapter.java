@@ -1,26 +1,18 @@
 package com.bestlabs.facerecoginination.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bestlabs.facerecoginination.R;
-import com.bestlabs.facerecoginination.models.LeaveModel;
-import com.bestlabs.facerecoginination.models.LeaveRequestListResponse;
-import com.squareup.picasso.Picasso;
+import com.bestlabs.facerecoginination.models.ClaimRequestListResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,38 +20,46 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManagementRVAdapter.ViewHolder>{
+public class ClaimManagementSelectRVAdapter  extends RecyclerView.Adapter<ClaimManagementSelectRVAdapter.ViewHolder>{
 
-    private ArrayList<LeaveRequestListResponse.Leave> leaveModels;
+    private ArrayList<ClaimRequestListResponse.Claim> claimModels;
     private Context mContext;
+    private ClaimManagementSelectRVAdapter.OnItemClickListener listener;
+    private int selectedPosition = RecyclerView.NO_POSITION;
 
-    public ArrayList<LeaveRequestListResponse.Leave> getLeaveModels() {
-        return leaveModels;
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 
-    public LeaveManagementRVAdapter(ArrayList<LeaveRequestListResponse.Leave> leaveModels, Context mContext) {
-        this.leaveModels = leaveModels;
+    public ArrayList<ClaimRequestListResponse.Claim> getClaimModels() {
+        return claimModels;
+    }
+
+    public ClaimManagementSelectRVAdapter(ArrayList<ClaimRequestListResponse.Claim> claimModels, Context mContext, ClaimManagementSelectRVAdapter.OnItemClickListener listener) {
+        this.claimModels = claimModels;
         this.mContext = mContext;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.worker_leave_item,parent,false);
-        return (new ViewHolder(view));
+    public ClaimManagementSelectRVAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.worker_allowance_item,parent,false);
+        return (new ClaimManagementSelectRVAdapter.ViewHolder(view));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        LeaveRequestListResponse.Leave leaveModel = leaveModels.get(position);
-        holder.titleTv.setText(leaveModel.getLeaveGroupName());
-        holder.statusTv.setText(leaveModel.getLeaveStatus());
-        holder.startTv.setText("From Date: "+ leaveModel.getLeaveFrom() + " -> " +"To Date: "+leaveModel.getLeaveTo());
+    public void onBindViewHolder(@NonNull ClaimManagementSelectRVAdapter.ViewHolder holder, int position) {
+        ClaimRequestListResponse.Claim claim = claimModels.get(position);
+        holder.titleTv.setText(claim.getClaimGroupName());
+        holder.statusTv.setText(claim.getClaimStatus());
+        holder.startTv.setText("Claim Amount: "+ claim.getClaimAmount());
 
-        if ("Approved".equals(leaveModel.getLeaveStatus())) {
+
+        if ("Approved".equals(claim.getClaimStatus())) {
             // Set green background for Approved status
             holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_green_light));
-        } else if ("Pending".equals(leaveModel.getLeaveStatus())) {
+        } else if ("Pending".equals(claim.getClaimStatus())) {
             // Set green background for Approved status
             holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_orange_light));
         } else {
@@ -67,15 +67,9 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
             holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
         }
 
-        if (!leaveModel.getClaimRemarks().isEmpty()) {
-            holder.remarkTv.setVisibility(View.VISIBLE);
-            holder.remarkTv.setText("Remark : "+ leaveModel.getClaimRemarks());
-        } else {
-            holder.remarkTv.setVisibility(View.GONE);
-        }
-
         try {
-            Date date = stringToDate(leaveModel.getLeaveCreatedOn());
+            Log.e("Tag", ""+claim.getClaimCreatedOn());
+            Date date = stringToDate(claim.getClaimCreatedOn());
 
             // Format the date to "MMM" (month abbreviation)
             String formattedMonth = formatMonthDate(date);
@@ -86,12 +80,6 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }
-
-    public void addLeaves(ArrayList<LeaveRequestListResponse.Leave> newLeaves) {
-        int startPosition = leaveModels.size();
-        leaveModels.addAll(newLeaves);
-        notifyItemRangeInserted(startPosition, newLeaves.size());
     }
 
     private static Date stringToDate(String dateString) throws ParseException {
@@ -120,21 +108,21 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
 
     @Override
     public int getItemCount() {
-        return leaveModels.size();
+        return claimModels.size();
     }
 
     public void removeItem(int position) {
-        leaveModels.remove(position);
+        claimModels.remove(position);
         notifyDataSetChanged();
     }
 
-    public void restoreItem(LeaveRequestListResponse.Leave item, int position) {
-        leaveModels.add(position,item);
+    public void restoreItem(ClaimRequestListResponse.Claim item, int position) {
+        claimModels.add(position,item);
         notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView dateTv, monthTv, titleTv, statusTv, remarkTv;
+        TextView dateTv, monthTv, titleTv, statusTv;
         TextView startTv;
 
         public ViewHolder(@NonNull View itemView) {
@@ -144,7 +132,16 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
             titleTv = itemView.findViewById(R.id.tv_leave_title);
             statusTv = itemView.findViewById(R.id.tv_leave_status);
             startTv = itemView.findViewById(R.id.tv_leave_start);
-            remarkTv = itemView.findViewById(R.id.tv_leave_remark);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(claimModels.get(getAbsoluteAdapterPosition()).getClaimID());
+                    notifyItemChanged(selectedPosition);
+                    selectedPosition = getAdapterPosition();
+                    notifyItemChanged(selectedPosition);
+                }
+            });
         }
     }
 

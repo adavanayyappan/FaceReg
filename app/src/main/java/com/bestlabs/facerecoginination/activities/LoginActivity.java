@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity {
         dialog.setCancelable(false);
         dialog.setView(progressBar);
 
-//        mEmail.setText("98765432");
-//        mPassword.setText("Password@123");
+        mEmail.setText("98765432");
+        mPassword.setText("Password@123");
     }
 
     private void clickListners(){
@@ -174,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
                         PreferenceManager.saveBoolean(context, Constants.KEY_ISLOGGEDIN, true);
                         PreferenceManager.saveString(context, Constants.KEY_EMP_IMAGE, result.getResult().getFaceImage());
 
-                        if (result.getResult().getAllowApprove().equals("No")) {
+                        if (!result.getResult().getAllowApprove().equals("No")) {
                             Intent intent = new Intent(getBaseContext(), WorkerDashboardActivity.class);
                             finish();
                             startActivity(intent);

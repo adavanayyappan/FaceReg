@@ -1,6 +1,7 @@
 package com.bestlabs.facerecoginination.ui.leave_management;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,6 +27,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -43,8 +46,10 @@ import com.bestlabs.facerecoginination.NetworkManager.APIInterface;
 import com.bestlabs.facerecoginination.R;
 import com.bestlabs.facerecoginination.activities.facereginationhelper.FaceAddTwoActivity;
 import com.bestlabs.facerecoginination.adapters.LeaveTypeListRVAdapter;
+import com.bestlabs.facerecoginination.adapters.LeaveTypeSelectedListRVAdapter;
 import com.bestlabs.facerecoginination.adapters.TimeManagementAdapter;
 import com.bestlabs.facerecoginination.models.FaceAddResponse;
+import com.bestlabs.facerecoginination.models.LeaveApplyResponse;
 import com.bestlabs.facerecoginination.models.LeaveCategoryModel;
 import com.bestlabs.facerecoginination.models.LeaveListModel;
 import com.bestlabs.facerecoginination.models.PunchListModel;
@@ -79,19 +84,21 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
     private AppCompatButton applyLeave_Btn;
     private TextInputLayout textInputLayoutAppliedDate, textInputLayoutStartDate, textInputLayoutEndDate, textInputLayoutDescription;
     private TextInputEditText editTextAppliedDate, editTextStartDate, editTextEndDate, editTextDescription;
-    private Spinner spinnerDays;
     private Button plusButtonAttachment;
     private ImageView iVAttachment;
     private TextView tvAttachmentName;
     private AlertDialog dialog;
     APIInterface apiService;
-    private LeaveTypeListRVAdapter leaveTypeListRVAdapter;
+    private LeaveTypeSelectedListRVAdapter leaveTypeListRVAdapter;
     static RecyclerView recyclerViewLeave;
     private Bitmap selectedBitap;
+    private Integer leaveRequestID = 0;
 
     private static final int PICK_FILE_REQUEST_CODE = 1;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private static final int PERMISSION_REQUEST_CODE = 1001;
+    int leaveID;
+    private ActivityResultLauncher<Intent> filePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +121,6 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         editTextEndDate = findViewById(R.id.editTextEndDate);
         editTextDescription = findViewById(R.id.editTextDescription);
 
-        spinnerDays = findViewById(R.id.spinnerDays);
         plusButtonAttachment = findViewById(R.id.plusButtonAttachment);
         applyLeave_Btn = findViewById(R.id.applyLeaveButton);
 
@@ -135,6 +141,35 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
            
         }
 
+        // Initialize the file picker launcher
+        filePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Uri selectedFileUri = data.getData(); // Extract the Uri
+                            try {
+                                // Convert the URI to a Bitmap
+                                selectedBitap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedFileUri);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Get the filename from the URI
+                            String selectedFileName = getFileName(selectedFileUri);
+
+                            // Display the selected filename in the TextView
+                            tvAttachmentName.setText(selectedFileName);
+                            tvAttachmentName.setVisibility(View.VISIBLE);
+                            iVAttachment.setVisibility(View.VISIBLE);
+
+                        }
+                    }
+                }
+        );
+
         ProgressBar progressBar = new ProgressBar(LeaveWorkerApplyActivity.this);
         progressBar.setPadding(10,30,10,30);
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(LeaveWorkerApplyActivity.this);
@@ -145,8 +180,9 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         recyclerViewLeave = findViewById(R.id.rc_worker_leave_list);
 
         apiService = APIClient.getClient().create(APIInterface.class);
+        Intent mIntent = getIntent();
+        leaveRequestID = mIntent.getIntExtra("leaveId", 0);
 
-        getLeaveTypeData();
         getLeaveListTypeData();
 
         editTextStartDate.setOnClickListener(new View.OnClickListener() {
@@ -177,9 +213,10 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
                 } else {
                     // Permission already granted, proceed with your logic
                     // Launch file picker intent
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.setType("image/*");
-                    startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    filePickerLauncher.launch(intent);
                 }
             }
         });
@@ -214,6 +251,8 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         String dateFormat = "dd-MM-yyyy";
         CharSequence currentDate = DateFormat.format(dateFormat, calendar);
         editTextAppliedDate.setText(currentDate);
+        editTextStartDate.setText(currentDate);
+        editTextEndDate.setText(currentDate);
         editTextAppliedDate.setKeyListener(null);
         editTextStartDate.setKeyListener(null);
         editTextEndDate.setKeyListener(null);
@@ -304,7 +343,6 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         String startDateString = editTextStartDate.getText().toString().trim();
         String endDateString = editTextEndDate.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
-        String selectedDays = (String) spinnerDays.getSelectedItem();
 
         try {
             Date appliedDate = dateFormat.parse(appliedDateString);
@@ -313,17 +351,21 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
 
             // Check if end date is greater than start date
             if (endDate.before(startDate)) {
-                editTextEndDate.setError("End date must be after start date");
-                return false;
+                textInputLayoutEndDate.setError("End date must be after start date");
+            } else {
+                textInputLayoutEndDate.setError(null);
             }
 
             // Additional validations for other fields
             if (TextUtils.isEmpty(description)) {
-                editTextDescription.setError("Description is required");
-                return false;
+                textInputLayoutDescription.setError("Description is required");
+            } else {
+                textInputLayoutDescription.setError(null);
             }
 
-            // Perform additional validations as needed
+            if (endDate.before(startDate) || TextUtils.isEmpty(description)) {
+                return false;
+            }
 
             // If all validations pass
             return true;
@@ -344,7 +386,7 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void getLeaveTypeData() {
+   /* private void getLeaveTypeData() {
         // Check if the internet is available
         if (NetworkUtils.isNetworkAvailable(LeaveWorkerApplyActivity.this)) {
             // Your network-related logic here
@@ -370,9 +412,11 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
 
                         // Create a list of numbers from 1 to 50
                         List<String> arraySpinner = new ArrayList<>();
+                        leaveValueArray.clear();
 
                         for(int i = 0; i <= leaveCategoryModel.getResult().size() - 1; i++) {
                             arraySpinner.add(leaveCategoryModel.getResult().get(i).getLabel());
+                            leaveValueArray.add(leaveCategoryModel.getResult().get(i).getValue());
                         }
 
                         // Handle the response data
@@ -408,7 +452,7 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
                 }
             });
         }
-    }
+    }*/
 
     private void getLeaveListTypeData() {
         // Check if the internet is available
@@ -432,8 +476,21 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         dialog.dismiss();
                         LeaveListModel leaveListModels = response.body();
-
-                        leaveTypeListRVAdapter = new LeaveTypeListRVAdapter((ArrayList<LeaveListModel.LeaveType>) leaveListModels.getResult(), LeaveWorkerApplyActivity.this);
+                        if (leaveListModels.getResult() == null) {
+                            return;
+                        }
+                        int selectedPosition = RecyclerView.NO_POSITION;
+                        for (int i = 0; i < leaveListModels.getResult().size(); i++) {
+                            if (leaveListModels.getResult().get(i).getValue() == leaveRequestID) {
+                                selectedPosition = i;
+                            }
+                        }
+                        leaveTypeListRVAdapter = new LeaveTypeSelectedListRVAdapter((ArrayList<LeaveListModel.LeaveType>) leaveListModels.getResult(), LeaveWorkerApplyActivity.this, selectedPosition, new LeaveTypeSelectedListRVAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(int position) {
+                                leaveRequestID = position;
+                            }
+                        });
                         recyclerViewLeave.setNestedScrollingEnabled(false);
                         recyclerViewLeave.setAdapter(leaveTypeListRVAdapter);
                         recyclerViewLeave.setLayoutManager(new LinearLayoutManager(LeaveWorkerApplyActivity.this, LinearLayoutManager.HORIZONTAL, false));
@@ -474,43 +531,45 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
         String clientID_STR = Base64Utils.intToBase64(clientID);
         Log.e("token", ""+token);
 
-        File file = ImageUtils.convertImageViewToFile(LeaveWorkerApplyActivity.this, selectedBitap);
+        MultipartBody.Part body = null;
 
-        RequestBody requestFile =
-                RequestBody.create(
-                        MediaType.parse("image/jpg"),
-                        file
-                );
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("face_image", file.getName(), requestFile);
+        if (selectedBitap != null) {
+            File file = ImageUtils.convertImageViewToFile(LeaveWorkerApplyActivity.this, selectedBitap);
+
+            RequestBody requestFile =
+                    RequestBody.create(
+                            MediaType.parse("image/jpg"),
+                            file
+                    );
+             body = MultipartBody.Part.createFormData("leaveDoc", file.getName(), requestFile);
+        }
 
         String startDateString = editTextStartDate.getText().toString().trim();
         String endDateString = editTextEndDate.getText().toString().trim();
         String description = editTextDescription.getText().toString().trim();
 
+
         RequestBody empIDValue = RequestBody.create(MediaType.parse("text/plain"), empID_STR);
         RequestBody clientIDValue = RequestBody.create(MediaType.parse("text/plain"), clientID_STR);
-        RequestBody leaveTypeID = RequestBody.create(MediaType.parse("text/plain"), empID_STR);
+        RequestBody leaveTypeID = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(leaveRequestID));
         RequestBody fromDate = RequestBody.create(MediaType.parse("text/plain"), startDateString);
         RequestBody toDate = RequestBody.create(MediaType.parse("text/plain"), endDateString);
         RequestBody remarks = RequestBody.create(MediaType.parse("text/plain"), description);
         RequestBody mailTo = RequestBody.create(MediaType.parse("text/plain"), "mailto:test3@gmail.com");
 
-        Call<FaceAddResponse> call = apiService.applyLeave(token, body, empIDValue, clientIDValue, leaveTypeID, fromDate, toDate, remarks, mailTo);
+        Call<LeaveApplyResponse> call = apiService.applyLeave(token, body, empIDValue, clientIDValue, leaveTypeID, fromDate, toDate, remarks, mailTo);
 
-        call.enqueue(new Callback<FaceAddResponse>() {
+        call.enqueue(new Callback<LeaveApplyResponse>() {
             @Override
-            public void onResponse(Call<FaceAddResponse> call, Response<FaceAddResponse> response) {
+            public void onResponse(Call<LeaveApplyResponse> call, Response<LeaveApplyResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     // Handle successful response
-                    FaceAddResponse addResponse = response.body();
+                    LeaveApplyResponse addResponse = response.body();
                     Log.e("Response", ""+response.body());
                     Log.e("Status", addResponse.getStatus());
-                    Log.e("Image", addResponse.getFaceImage());
 
                     dialog.dismiss();
                     if (addResponse.getStatus().equals("success")) {
-
                         finish();
                     } else {
                         AlertDialogHelper.showSnackbar(constraintLayout, "Apply leave Failed. Please Try Again");
@@ -524,7 +583,7 @@ public class LeaveWorkerApplyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<FaceAddResponse> call, Throwable t) {
+            public void onFailure(Call<LeaveApplyResponse> call, Throwable t) {
                 // Handle failure
                 dialog.dismiss();
                 AlertDialogHelper.showSnackbar(constraintLayout, "Apply leave Failed. Please Try Again");

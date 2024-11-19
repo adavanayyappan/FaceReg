@@ -9,9 +9,9 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="30dp"
+        app:cardCornerRadius="3dp"
         app:cardElevation="1dp"
         app:cardMaxElevation="1.5dp"
         app:cardPreventCornerOverlap="true"
@@ -23,70 +23,66 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="100">
+            >
 
             <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_weight="20"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:id="@+id/tv_leave_month"
+                        android:layout_width="80dp"
+                        android:layout_height="20dp"
+                        android:background="@color/colorPrimary"
+                        android:fontFamily="@font/lexenddeca"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="Jan"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_leave_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="20dp"
+                        android:fontFamily="@font/brownbold"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="25"
+                        android:textAlignment="center"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="20sp" />
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="vertical"
-                android:weightSum="100">
+                >
 
                 <TextView
-                    android:id="@+id/tv_claim_month"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="40"
-                    android:background="@color/colorPrimary"
-                    android:fontFamily="@font/lexenddeca"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="Jan"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_claim_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="20dp"
-                    android:layout_weight="60"
-                    android:fontFamily="@font/brownbold"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="25"
-                    android:textAlignment="center"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="25sp" />
-
-
-            </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:layout_weight="75"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_allowance_title"
+                    android:id="@+id/tv_leave_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -95,28 +91,55 @@
                     android:singleLine="true"
                     android:text="Food Allowance"
                     android:textColor="@color/dark_gray"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_leave_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/brownbold"
+                    android:gravity="center|left"
+                    android:singleLine="true"
+                    android:text="From Date:"
+                    android:textColor="@color/gray"
+                    android:textSize="12sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    >
 
                     <TextView
-                        android:id="@+id/tv_allowance_status"
+                        android:id="@+id/tv_leave_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/gray"
                         android:fontFamily="@font/lexenddeca"
                         android:gravity="center|top"
                         android:singleLine="true"
                         android:text="Sick Leave"
                         android:textAlignment="center"
                         android:textColor="@color/dark_gray"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_leave_remark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/brownbold"
+                    android:gravity="center|left"
+                    android:singleLine="true"
+                    android:text="Remark: "
+                    android:textColor="@color/gray"
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </LinearLayout>

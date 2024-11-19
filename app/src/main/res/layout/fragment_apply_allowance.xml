@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,6 +27,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rc_worker_claim_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBar" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputAppliedDate"
         android:layout_width="match_parent"
@@ -40,7 +54,7 @@
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBar"
+        app:layout_constraintTop_toBottomOf="@+id/rc_worker_claim_list"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -54,7 +68,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutDays"
+        android:id="@+id/textInputAppliedAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -63,17 +77,20 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:fontFamily="@font/brownbold"
-        android:hint="Number of days"
+        android:hint="Claim Amount"
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputAppliedDate">
+        app:layout_constraintTop_toBottomOf="@+id/textInputAppliedDate"
+        >
 
-        <Spinner
-            android:id="@+id/spinnerDays"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextClaimAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:fontFamily="@font/brownbold"
+            android:text=""
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -90,7 +107,7 @@
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDays"
+        app:layout_constraintTop_toBottomOf="@+id/textInputAppliedAmount"
         android:hint="Description">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -99,7 +116,7 @@
             android:layout_height="80dp"
             android:fontFamily="@font/brownbold"
             app:endIconDrawable="@drawable/ic_calendar"
-            android:text="Food Allowance"
+            android:text=""
             android:hint="Description"
             android:inputType="text" />
 

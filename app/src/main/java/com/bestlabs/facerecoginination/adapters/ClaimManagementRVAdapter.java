@@ -1,6 +1,7 @@
 package com.bestlabs.facerecoginination.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bestlabs.facerecoginination.R;
 import com.bestlabs.facerecoginination.models.ClaimModel;
+import com.bestlabs.facerecoginination.models.ClaimRequestListResponse;
 import com.bestlabs.facerecoginination.models.LeaveModel;
+import com.bestlabs.facerecoginination.models.LeaveRequestListResponse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,16 +25,16 @@ import java.util.Locale;
 
 public class ClaimManagementRVAdapter extends RecyclerView.Adapter<ClaimManagementRVAdapter.ViewHolder>{
 
-    private ArrayList<ClaimModel> claimModels;
+    private ArrayList<ClaimRequestListResponse.Claim> claimModels;
     private Context mContext;
 
-    public ArrayList<ClaimModel> getClaimModels() {
+    public ArrayList<ClaimRequestListResponse.Claim> getClaimModels() {
         return claimModels;
     }
 
-    public ClaimManagementRVAdapter(ArrayList<ClaimModel> claimModels, Context mContext) {
-        this.mContext = mContext;
+    public ClaimManagementRVAdapter(ArrayList<ClaimRequestListResponse.Claim> claimModels, Context mContext) {
         this.claimModels = claimModels;
+        this.mContext = mContext;
     }
 
     @NonNull
@@ -43,20 +46,33 @@ public class ClaimManagementRVAdapter extends RecyclerView.Adapter<ClaimManageme
 
     @Override
     public void onBindViewHolder(@NonNull ClaimManagementRVAdapter.ViewHolder holder, int position) {
-        ClaimModel claimModel = claimModels.get(position);
-        holder.titleTv.setText(claimModel.getName());
-        holder.statusTv.setText(claimModel.getStatus());
+        ClaimRequestListResponse.Claim claim = claimModels.get(position);
+        holder.titleTv.setText(claim.getClaimGroupName());
+        holder.statusTv.setText(claim.getClaimStatus());
+        holder.startTv.setText("Claim Amount: "+ claim.getClaimAmount());
 
-        if ("Approved".equals(claimModel.getStatus())) {
+
+        if ("Approved".equals(claim.getClaimStatus())) {
             // Set green background for Approved status
-            holder.statusTv.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.holo_green_light));
+            holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_green_light));
+        } else if ("Pending".equals(claim.getClaimStatus())) {
+            // Set green background for Approved status
+            holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_orange_light));
         } else {
             // Set red background for other statuses
-            holder.statusTv.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
+            holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
+        }
+
+        if (!claim.getClaimRemarks().isEmpty()) {
+            holder.remarkTv.setVisibility(View.VISIBLE);
+            holder.remarkTv.setText("Remark : "+ claim.getClaimRemarks());
+        } else {
+            holder.remarkTv.setVisibility(View.GONE);
         }
 
         try {
-            Date date = stringToDate(claimModel.getDate());
+            Log.e("Tag", ""+claim.getClaimCreatedOn());
+            Date date = stringToDate(claim.getClaimCreatedOn());
 
             // Format the date to "MMM" (month abbreviation)
             String formattedMonth = formatMonthDate(date);
@@ -103,20 +119,24 @@ public class ClaimManagementRVAdapter extends RecyclerView.Adapter<ClaimManageme
         notifyDataSetChanged();
     }
 
-    public void restoreItem(ClaimModel item, int position) {
+    public void restoreItem(ClaimRequestListResponse.Claim item, int position) {
         claimModels.add(position,item);
         notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView dateTv, monthTv, titleTv, statusTv;
+        TextView dateTv, monthTv, titleTv, statusTv, remarkTv;
+        TextView startTv;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            dateTv = itemView.findViewById(R.id.tv_claim_date);
-            monthTv = itemView.findViewById(R.id.tv_claim_month);
-            titleTv = itemView.findViewById(R.id.tv_allowance_title);
-            statusTv = itemView.findViewById(R.id.tv_allowance_status);
+            dateTv = itemView.findViewById(R.id.tv_leave_date);
+            monthTv = itemView.findViewById(R.id.tv_leave_month);
+            titleTv = itemView.findViewById(R.id.tv_leave_title);
+            statusTv = itemView.findViewById(R.id.tv_leave_status);
+            startTv = itemView.findViewById(R.id.tv_leave_start);
+            remarkTv = itemView.findViewById(R.id.tv_leave_remark);
         }
     }
+
 }

@@ -45,7 +45,7 @@ public class LeaveTypeListRVAdapter  extends RecyclerView.Adapter<LeaveTypeListR
     @Override
     public void onBindViewHolder(@NonNull LeaveTypeListRVAdapter.ViewHolder holder, int position) {
         LeaveListModel.LeaveType leaveModel = leaveListModel.get(position);
-        holder.leaveValueTv.setText(leaveModel.getValue());
+        holder.leaveValueTv.setText(""+leaveModel.getBalanceleave());
         holder.leaveTypeTv.setText(leaveModel.getLabel());
     }
 

@@ -17,12 +17,12 @@
 
     <fragment
         android:id="@+id/nav_leave"
-        android:name="com.bestlabs.facerecoginination.ui.leave_management.LeaveSupervisorManagementFragment"
-        tools:layout="@layout/fragment_leaver_supervisor" />
+        android:name="com.bestlabs.facerecoginination.ui.leave_management.LeaveTabFragment"
+        tools:layout="@layout/leave_tab_fragment" />
 
     <fragment
         android:id="@+id/nav_allowance"
-        android:name="com.bestlabs.facerecoginination.ui.claim.ClaimSupervisorManagementFragment"
-        tools:layout="@layout/fragment_claim_supervisor" />
+        android:name="com.bestlabs.facerecoginination.ui.claim.ClaimTabFragment"
+        tools:layout="@layout/claim_tab_fragment" />
 
 </navigation>

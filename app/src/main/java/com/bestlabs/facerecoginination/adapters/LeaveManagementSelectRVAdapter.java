@@ -1,26 +1,17 @@
 package com.bestlabs.facerecoginination.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bestlabs.facerecoginination.R;
-import com.bestlabs.facerecoginination.models.LeaveModel;
 import com.bestlabs.facerecoginination.models.LeaveRequestListResponse;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,18 +19,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManagementRVAdapter.ViewHolder>{
+public class LeaveManagementSelectRVAdapter extends RecyclerView.Adapter<LeaveManagementSelectRVAdapter.ViewHolder>{
 
     private ArrayList<LeaveRequestListResponse.Leave> leaveModels;
     private Context mContext;
+    private LeaveManagementSelectRVAdapter.OnItemClickListener listener;
+    private int selectedPosition = RecyclerView.NO_POSITION;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
 
     public ArrayList<LeaveRequestListResponse.Leave> getLeaveModels() {
         return leaveModels;
     }
 
-    public LeaveManagementRVAdapter(ArrayList<LeaveRequestListResponse.Leave> leaveModels, Context mContext) {
+    public LeaveManagementSelectRVAdapter(ArrayList<LeaveRequestListResponse.Leave> leaveModels, Context mContext, LeaveManagementSelectRVAdapter.OnItemClickListener listener) {
         this.leaveModels = leaveModels;
         this.mContext = mContext;
+        this.listener = listener;
     }
 
     @NonNull
@@ -65,13 +63,6 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
         } else {
             // Set red background for other statuses
             holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
-        }
-
-        if (!leaveModel.getClaimRemarks().isEmpty()) {
-            holder.remarkTv.setVisibility(View.VISIBLE);
-            holder.remarkTv.setText("Remark : "+ leaveModel.getClaimRemarks());
-        } else {
-            holder.remarkTv.setVisibility(View.GONE);
         }
 
         try {
@@ -134,7 +125,7 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView dateTv, monthTv, titleTv, statusTv, remarkTv;
+        TextView dateTv, monthTv, titleTv, statusTv;
         TextView startTv;
 
         public ViewHolder(@NonNull View itemView) {
@@ -144,7 +135,16 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
             titleTv = itemView.findViewById(R.id.tv_leave_title);
             statusTv = itemView.findViewById(R.id.tv_leave_status);
             startTv = itemView.findViewById(R.id.tv_leave_start);
-            remarkTv = itemView.findViewById(R.id.tv_leave_remark);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(leaveModels.get(getAbsoluteAdapterPosition()).getLeaveID());
+                    notifyItemChanged(selectedPosition);
+                    selectedPosition = getAdapterPosition();
+                    notifyItemChanged(selectedPosition);
+                }
+            });
         }
     }
 

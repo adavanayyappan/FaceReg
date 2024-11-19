@@ -1,9 +1,11 @@
 package com.bestlabs.facerecoginination.ui.TimeSheet;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -24,8 +26,10 @@ import com.bestlabs.facerecoginination.others.Base64Utils;
 import com.bestlabs.facerecoginination.others.Constants;
 import com.bestlabs.facerecoginination.others.NetworkUtils;
 import com.bestlabs.facerecoginination.others.PreferenceManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,9 +41,11 @@ public class TimeSheetFragment extends Fragment {
     private Boolean isUndo = false;
     private TimeManagementAdapter timeManagementAdapter;
     private ConstraintLayout constraintLayout;
+    private FloatingActionButton filter_Btn;
     View root;
     private AlertDialog dialog;
     APIInterface apiService;
+    private String filterMonth = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,9 +61,48 @@ public class TimeSheetFragment extends Fragment {
         dialog.setView(progressBar);
 
         apiService = APIClient.getClient().create(APIInterface.class);
+        filter_Btn = root.findViewById(R.id.fab_filter_timesheet);
+
+        filter_Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
+
 
         getTimeSheetData();
         return root;
+    }
+
+    private void showDatePickerDialog() {
+        // Get the current date
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create a DatePickerDialog and set the date picker's initial values
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getActivity(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selectedYear, int monthOfYear, int dayOfMonth) {
+                        // Update the EditText with the selected date
+                        filterMonth = selectedYear + "-" + (monthOfYear + 1);
+                        getTimeSheetData();
+                    }
+                },
+                year,
+                month,
+                day
+        );
+
+        // Set the minimum date to today
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+
+        // Show the DatePickerDialog
+        datePickerDialog.show();
     }
 
     private void getTimeSheetData() {
@@ -75,7 +120,7 @@ public class TimeSheetFragment extends Fragment {
             Log.e("clientID_STR", ""+clientID_STR);
 
             // Call the getPunchList method with authorization header and query parameters
-            Call<PunchListModel> call = apiService.getPunchList(token, empID_STR, clientID_STR, "");
+            Call<PunchListModel> call = apiService.getPunchList(token, empID_STR, clientID_STR, filterMonth);
 
             call.enqueue(new Callback<PunchListModel>() {
                 @Override

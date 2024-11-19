@@ -24,6 +24,7 @@ import com.bestlabs.facerecoginination.NetworkManager.APIInterface;
 import com.bestlabs.facerecoginination.R;
 import com.bestlabs.facerecoginination.activities.facereginationhelper.FaceAddActivity;
 import com.bestlabs.facerecoginination.activities.facereginationhelper.FaceIdentifyActivity;
+import com.bestlabs.facerecoginination.activities.facereginationhelper.FaceTwoIdentifyActivity;
 import com.bestlabs.facerecoginination.models.PunchStatusModel;
 import com.bestlabs.facerecoginination.others.AlertDialogHelper;
 import com.bestlabs.facerecoginination.others.Base64Utils;
@@ -63,7 +64,7 @@ public class SupervisorDashboardFragment  extends Fragment {
         tvHeader = root.findViewById(R.id.tv_header);
         tvTitleName = root.findViewById(R.id.tv_dash_name);
         tvDesignation = root.findViewById(R.id.tv_dash_designation);
-        imageViewHeader = root.findViewById(R.id.imageView_top_header);
+        imageViewHeader = root.findViewById(R.id.floatingImageView);
         imageViewScan = root.findViewById(R.id.iv_dash_card_scan);
 
         tvDashTime = root.findViewById(R.id.tv_dash_card_time);
@@ -93,7 +94,7 @@ public class SupervisorDashboardFragment  extends Fragment {
                     Intent intent = new Intent(getActivity().getBaseContext(), FaceAddActivity.class);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(getActivity().getBaseContext(), FaceAddActivity.class);
+                    Intent intent = new Intent(getActivity().getBaseContext(), FaceTwoIdentifyActivity.class);
                     startActivity(intent);
                 }
             }

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -44,6 +45,7 @@ public class SupervisorDashboard extends AppCompatActivity {
     private TextView nav_name, nav_email;
     BottomNavigationView bottomNavigationView;
     private ConstraintLayout constraintLayout;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +53,19 @@ public class SupervisorDashboard extends AppCompatActivity {
         setContentView(R.layout.activity_supervisor_dashboard);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         int titleTextColor = Color.WHITE; // Change it to the color you desire
         toolbar.setTitleTextColor(titleTextColor);
+        setTitle("Dashboard");
+        setSupportActionBar(toolbar);
 
         taskSortBundle = new Bundle();
         sharedPref = new SharedPref(SupervisorDashboard.this);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        toggle  = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        toggle.setDrawerIndicatorEnabled(true);
+        drawer.setDrawerListener(toggle);
+
         navigationView = findViewById(R.id.nav_view);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setAnimation(null);
@@ -86,9 +94,12 @@ public class SupervisorDashboard extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_profile, R.id.nav_terms,
                 R.id.nav_privacy, R.id.nav_contact_us)
-                .setDrawerLayout(drawer)
+                .setOpenableLayout(drawer)
                 .build();
 
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         NavController bottomNavController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView, bottomNavController);
@@ -96,7 +107,6 @@ public class SupervisorDashboard extends AppCompatActivity {
         navigationView.setItemIconTintList(null);
         //setting icon tint to white for other menu items
         setDefaultIconTint();
-        setTitle("Dashboard");
         // Set up a ColorStateList for icon colors
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_checked},
@@ -135,6 +145,13 @@ public class SupervisorDashboard extends AppCompatActivity {
                     return false;
             }
         });
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
     }
 
     @Override
@@ -160,6 +177,7 @@ public class SupervisorDashboard extends AppCompatActivity {
 
     }
 
+
     private void setDefaultIconTint() {
         linearLayout = findViewById(R.id.ll_logout);
         linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -175,8 +193,6 @@ public class SupervisorDashboard extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.worker_dashboard, menu);
         return true;
     }
 
