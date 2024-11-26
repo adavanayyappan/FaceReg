@@ -40,6 +40,7 @@
         <entry key="app/src/main/res/layout/activity_add_face.xml" value="0.42956349206349204" />
         <entry key="app/src/main/res/layout/activity_approve_claim.xml" value="0.42956349206349204" />
         <entry key="app/src/main/res/layout/activity_approve_leave.xml" value="0.42956349206349204" />
+        <entry key="app/src/main/res/layout/activity_change_password.xml" value="0.4930555555555556" />
         <entry key="app/src/main/res/layout/activity_create_allowance.xml" value="0.45" />
         <entry key="app/src/main/res/layout/activity_create_task.xml" value="0.6703812751217165" />
         <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.5" />
@@ -52,6 +53,7 @@
         <entry key="app/src/main/res/layout/activity_new_project_select_worker.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/activity_new_user.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/activity_own_worker_profile.xml" value="0.182518115942029" />
+        <entry key="app/src/main/res/layout/activity_reset_password.xml" value="0.4930555555555556" />
         <entry key="app/src/main/res/layout/activity_second.xml" value="0.42956349206349204" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/activity_supervisor_dashboard.xml" value="0.45" />

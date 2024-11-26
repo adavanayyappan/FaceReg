@@ -110,10 +110,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (password.isEmpty()) {
                     mPassword.setError("Please enter password");
+                    return;
                 }
 
                 if (!isValidPassword(password)) {
                     mPassword.setError("Invalid Password");
+                    return;
                 }
                 if (email.isEmpty() || password.isEmpty())
                     Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
@@ -139,7 +141,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getBaseContext(), ForgotPasswordActivity.class);
-                finish();
                 startActivity(intent);
             }
         });

@@ -105,6 +105,25 @@ public class SupervisorDashboard extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, bottomNavController);
 
         navigationView.setItemIconTintList(null);
+        // Set up the listener for navigation item clicks
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                // Handle item clicks here
+                switch (item.getItemId()) {
+                    case R.id.nav_password:
+                        Intent intent = new Intent(SupervisorDashboard.this, ChangePasswordActivity.class);
+                        startActivity(intent);
+                        break;
+                    default:
+                        return false;
+                }
+
+                // Close the drawer after item click
+                drawer.closeDrawers();
+                return true;
+            }
+        });
         //setting icon tint to white for other menu items
         setDefaultIconTint();
         // Set up a ColorStateList for icon colors

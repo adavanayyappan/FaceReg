@@ -20,8 +20,15 @@
             android:name=".activities.EditProfileActivity"
             android:theme="@style/activity_custom" />
         <activity
-            android:name=".activities.ForgotPasswordActivity"
+            android:name=".activities.ChangePasswordActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/activity_custom" />
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.ResetPasswordActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.WorkerDashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />

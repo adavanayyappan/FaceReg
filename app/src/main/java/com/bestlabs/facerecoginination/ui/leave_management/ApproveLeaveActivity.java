@@ -1,5 +1,6 @@
 package com.bestlabs.facerecoginination.ui.leave_management;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -124,7 +126,7 @@ public class ApproveLeaveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Handle option 1 click
-                postLeaveStatusRequest("Approve", claimID);
+                postLeaveStatusRequest("Approve", claimID, "");
                 bottomSheetDialog.dismiss();
             }
         });
@@ -133,12 +135,36 @@ public class ApproveLeaveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Handle option 2 click
-                postLeaveStatusRequest("Reject", claimID);
+                showRemarksDialog(claimID);
                 bottomSheetDialog.dismiss();
             }
         });
         bottomSheetDialog.show();
     }
+
+    private void showRemarksDialog(Integer claimID) {
+        // Create an EditText
+        final EditText input = new EditText(ApproveLeaveActivity.this);
+        input.setHint("Enter your remarks");
+
+        // Create the AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(ApproveLeaveActivity.this);
+        builder.setTitle("Enter Remarks")
+                .setView(input)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Get the text from EditText
+                        String remarks = input.getText().toString();
+                        // Handle the remarks (e.g., save it, display it, etc.)
+                        // You can use it here as needed
+                        postLeaveStatusRequest("Reject", claimID, remarks);
+                    }
+                })
+                .setNegativeButton("Cancel", null)  // Dismiss the dialog
+                .show();
+    }
+
 
     private void getApprovalLeaveListTypeData() {
         // Check if the internet is available
@@ -198,7 +224,7 @@ public class ApproveLeaveActivity extends AppCompatActivity {
     }
 
     // Method to make the POST request
-    public void postLeaveStatusRequest(String actionType, Integer leaveID) {
+    public void postLeaveStatusRequest(String actionType, Integer leaveID, String remarks) {
         String token = PreferenceManager.getString(ApproveLeaveActivity.this, Constants.KEY_TOKEN, "");
         int empID = PreferenceManager.getInt(ApproveLeaveActivity.this, Constants.KEY_EMP_ID, 0);
         int clientID = PreferenceManager.getInt(ApproveLeaveActivity.this, Constants.KEY_CLIENT_ID, 0);
@@ -206,7 +232,7 @@ public class ApproveLeaveActivity extends AppCompatActivity {
         String clientID_STR = Base64Utils.intToBase64(clientID);
         Log.e("token", ""+token);
 
-        Call<LeaveUpdateStatus> call = apiService.postLeaveStatus(token, empID_STR, clientID_STR, leaveID, actionType);
+        Call<LeaveUpdateStatus> call = apiService.postLeaveStatus(token, empID_STR, clientID_STR, leaveID, actionType, remarks);
 
         call.enqueue(new Callback<LeaveUpdateStatus>() {
             @Override

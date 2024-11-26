@@ -5,6 +5,7 @@ import com.bestlabs.facerecoginination.models.ClaimModel;
 import com.bestlabs.facerecoginination.models.ClaimRequestListResponse;
 import com.bestlabs.facerecoginination.models.ClaimUpdateStatus;
 import com.bestlabs.facerecoginination.models.FaceAddResponse;
+import com.bestlabs.facerecoginination.models.ForgotPasswordModel;
 import com.bestlabs.facerecoginination.models.LeaveApplyResponse;
 import com.bestlabs.facerecoginination.models.LeaveCategoryModel;
 import com.bestlabs.facerecoginination.models.LeaveListModel;
@@ -15,6 +16,7 @@ import com.bestlabs.facerecoginination.models.LoginUserModel;
 import com.bestlabs.facerecoginination.models.PunchListModel;
 import com.bestlabs.facerecoginination.models.PunchModel;
 import com.bestlabs.facerecoginination.models.PunchStatusModel;
+import com.bestlabs.facerecoginination.models.ResetPasswordModel;
 import com.bestlabs.facerecoginination.models.UserModel;
 import com.bestlabs.facerecoginination.models.UserProfile;
 
@@ -41,6 +43,31 @@ public interface APIInterface {
     Call<LoginUserModel> postLogin(
             @Field("userName") String userName,
             @Field("password") String password
+    );
+
+    @FormUrlEncoded
+    @POST("users/forgotpassword")
+    Call<ForgotPasswordModel> forgotPassword(
+            @Field("empEmailId") String empID
+    );
+
+    @FormUrlEncoded
+    @POST("users/resetpassword")
+    Call<ResetPasswordModel> resetPassword(
+            @Field("empEmailId") String empID,
+            @Field("OTPKey") String OTPKey,
+            @Field("password") String password,
+            @Field("cpassword") String cpassword
+    );
+
+    @FormUrlEncoded
+    @POST("users/changepassword")
+    Call<LeaveApplyResponse> changePassword(
+            @Header("Authorization") String authToken,
+            @Field("empID") String empID,
+            @Field("clientID") String clientID,
+            @Field("password") String password,
+            @Field("cpassword") String cpassword
     );
 
     @FormUrlEncoded
