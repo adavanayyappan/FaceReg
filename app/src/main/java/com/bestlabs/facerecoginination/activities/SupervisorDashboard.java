@@ -133,7 +133,7 @@ public class SupervisorDashboard extends AppCompatActivity {
         };
 
         int[] colors = new int[]{
-                getResources().getColor(R.color.colorPrimary),
+                getResources().getColor(R.color.activeMenu),
                 getResources().getColor(R.color.unselected_icon_color)
         };
 

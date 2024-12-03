@@ -21,10 +21,10 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="60dp"
             android:layout_gravity="bottom"
             android:background = "@color/white"
-            app:itemIconTint="@color/colorPrimaryDark"
+            app:itemIconTint="#01193F"
             app:itemTextColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:labelVisibilityMode="labeled"
