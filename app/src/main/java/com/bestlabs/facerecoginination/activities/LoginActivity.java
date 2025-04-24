@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity {
         dialog.setCancelable(false);
         dialog.setView(progressBar);
 
-        mEmail.setText("98765432");
-        mPassword.setText("Password@123");
+        //mEmail.setText("98765432");
+        //mPassword.setText("Password@123");
     }
 
     private void clickListners(){
