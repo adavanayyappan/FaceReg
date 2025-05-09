@@ -2,6 +2,7 @@ package com.bestlabs.facerecoginination.activities;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -9,7 +10,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 
 import com.bestlabs.facerecoginination.NetworkManager.APIClient;
 import com.bestlabs.facerecoginination.NetworkManager.APIInterface;
@@ -61,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     Context context;
     private Boolean isSwipe = false;
     private ConstraintLayout constraintLayout;
+
+    private static final int REQUEST_CODE_LOCATION = 1001;
 
     private APIInterface apiService;
     @SuppressLint("ClickableViewAccessibility")
@@ -120,6 +127,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (email.isEmpty() || password.isEmpty())
                     Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 else {
+                     if (!checkLocationPermission()) {
+                         AlertDialogHelper.showSnackbar(constraintLayout,"Location permission denied. Please grant permission" );
+                     }
                     // Check if the internet is available
                     if (NetworkUtils.isNetworkAvailable(LoginActivity.this)) {
                         // Your network-related logic here
@@ -225,5 +235,49 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (checkLocationPermission()) {
+            startLocationUpdates();
+        } else {
+            AlertDialogHelper.showSnackbar(constraintLayout,"Location permission denied. Please grant permission" );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_CODE_LOCATION);
+            return false;
+        }
+        return true;
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+    }
+
+    private void stopLocationUpdates() {
+
+    }
 }
 

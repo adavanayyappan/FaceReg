@@ -127,25 +127,26 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         bottomNavigationView.setItemIconTintList(colorStateList);
         //setting custom icon tint to display project status
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.bottom_nav_dashboard:
-                    setTitle("Dashboard");
-                    bottomNavController.navigate(R.id.nav_dashboard);
-                    return true;
-                case R.id.bottom_nav_calendar:
-                    setTitle("TimeSheet");
-                    bottomNavController.navigate(R.id.nav_timesheet);
-                    return true;
-                case R.id.bottom_nav_leave:
-                    setTitle("Leave Summary");
-                    bottomNavController.navigate(R.id.nav_leave);
-                    return true;
-                case R.id.bottom_nav_allowance:
-                    setTitle("Claim Summary");
-                    bottomNavController.navigate(R.id.nav_allowance);
-                    return true;
-                default:
-                    return false;
+            int id = item.getItemId();
+
+            if (id == R.id.bottom_nav_dashboard) {
+                setTitle("Dashboard");
+                bottomNavController.navigate(R.id.nav_dashboard);
+                return true;
+            } else if (id == R.id.bottom_nav_calendar) {
+                setTitle("TimeSheet");
+                bottomNavController.navigate(R.id.nav_timesheet);
+                return true;
+            } else if (id == R.id.bottom_nav_leave) {
+                setTitle("Leave Summary");
+                bottomNavController.navigate(R.id.nav_leave);
+                return true;
+            } else if (id == R.id.bottom_nav_allowance) {
+                setTitle("Claim Summary");
+                bottomNavController.navigate(R.id.nav_allowance);
+                return true;
+            } else {
+                return false;
             }
         });
 

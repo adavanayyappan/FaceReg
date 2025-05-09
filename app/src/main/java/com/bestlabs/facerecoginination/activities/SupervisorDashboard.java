@@ -109,14 +109,13 @@ public class SupervisorDashboard extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                // Handle item clicks here
-                switch (item.getItemId()) {
-                    case R.id.nav_password:
-                        Intent intent = new Intent(SupervisorDashboard.this, ChangePasswordActivity.class);
-                        startActivity(intent);
-                        break;
-                    default:
-                        return false;
+                int id = item.getItemId();
+
+                if (id == R.id.nav_password) {
+                    Intent intent = new Intent(SupervisorDashboard.this, ChangePasswordActivity.class);
+                    startActivity(intent);
+                } else {
+                    return false;
                 }
 
                 // Close the drawer after item click
@@ -143,25 +142,26 @@ public class SupervisorDashboard extends AppCompatActivity {
         bottomNavigationView.setItemIconTintList(colorStateList);
         //setting custom icon tint to display project status
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.bottom_nav_dashboard:
-                    setTitle("Dashboard");
-                    bottomNavController.navigate(R.id.nav_dashboard);
-                    return true;
-                case R.id.bottom_nav_calendar:
-                    setTitle("TimeSheet");
-                    bottomNavController.navigate(R.id.nav_timesheet);
-                    return true;
-                case R.id.bottom_nav_leave:
-                    setTitle("Leave Summary");
-                    bottomNavController.navigate(R.id.nav_leave);
-                    return true;
-                case R.id.bottom_nav_allowance:
-                    setTitle("Claim Summary");
-                    bottomNavController.navigate(R.id.nav_allowance);
-                    return true;
-                default:
-                    return false;
+            int id = item.getItemId();
+
+            if (id == R.id.bottom_nav_dashboard) {
+                setTitle("Dashboard");
+                bottomNavController.navigate(R.id.nav_dashboard);
+                return true;
+            } else if (id == R.id.bottom_nav_calendar) {
+                setTitle("TimeSheet");
+                bottomNavController.navigate(R.id.nav_timesheet);
+                return true;
+            } else if (id == R.id.bottom_nav_leave) {
+                setTitle("Leave Summary");
+                bottomNavController.navigate(R.id.nav_leave);
+                return true;
+            } else if (id == R.id.bottom_nav_allowance) {
+                setTitle("Claim Summary");
+                bottomNavController.navigate(R.id.nav_allowance);
+                return true;
+            } else {
+                return false;
             }
         });
 
