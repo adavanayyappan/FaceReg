@@ -99,7 +99,7 @@ public class TimeSheetFragment extends Fragment {
         );
 
         // Set the minimum date to today
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        //datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
 
         // Show the DatePickerDialog
         datePickerDialog.show();
