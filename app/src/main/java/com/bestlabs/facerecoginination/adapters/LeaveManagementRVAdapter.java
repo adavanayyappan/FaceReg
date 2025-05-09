@@ -67,9 +67,13 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
             holder.statusTv.setTextColor(ContextCompat.getColor(mContext, android.R.color.holo_red_light));
         }
 
-        if (!leaveModel.getLeaveRemarks().isEmpty()) {
-            holder.remarkTv.setVisibility(View.VISIBLE);
-            holder.remarkTv.setText("Remark : "+ leaveModel.getLeaveRemarks());
+        if (leaveModel.getLeaveRemarks() != null) {
+            if(!leaveModel.getLeaveRemarks().isEmpty()) {
+                holder.remarkTv.setVisibility(View.VISIBLE);
+                holder.remarkTv.setText("Remark : " + leaveModel.getLeaveRemarks());
+            }else {
+                holder.remarkTv.setVisibility(View.GONE);
+            }
         } else {
             holder.remarkTv.setVisibility(View.GONE);
         }
